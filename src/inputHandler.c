@@ -32,12 +32,20 @@ int handleInput(const int keyPress, struct workspacePos_t *wsPos){
         wsPos->col++;
         break;
     case Move:
+        //TODO: add a chceker if there is a \n character
+
         if(keyPress == KEY_DOWN && wsPos->row < MAX_ROW 
         && !checkIfNullTextBuffer(wsPos->row+1,0)){
             wsPos->row++;
+            if(checkIfNullTextBuffer(wsPos->row,wsPos->col)){
+                wsPos->col = buffHandle->lastCharPos[wsPos->row];
+            }
         }
         else if(keyPress == KEY_UP && wsPos->row > 0){
             wsPos->row--;
+            if(checkIfNullTextBuffer(wsPos->row,wsPos->col)){
+                wsPos->col = buffHandle->lastCharPos[wsPos->row];
+            }
         }
         else if(keyPress == KEY_LEFT && wsPos->col > 0){
             wsPos->col--;
