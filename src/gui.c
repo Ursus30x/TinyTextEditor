@@ -17,6 +17,7 @@ WINDOW  *headerWin,
         *tooltipWin;
 
 void updateHeader(const char *filename){
+    wbkgd(headerWin,COLOR_PAIR(1));
     mvwprintw(headerWin,0,0,"%s",filename);
     mvwprintw(headerWin,0,getmaxx(headerWin)-PROGRAM_NAME_LEN,"%s",PROGRAM_NAME);
 
@@ -47,7 +48,7 @@ void updateWorkspace(const struct textBuffer_t *textBuffer){
 //TODO: remove row and col and make it a struct
 
 void updateCursorPos(const int row,const int col){
-    move(row+HEADER_SIZE_ROW,col+2);
+    move(row+HEADER_SIZE_ROW,col+3);
 }
 
 void updateGUI(const char *filename,const struct textBuffer_t *textBuffer,const int row,const int col){
