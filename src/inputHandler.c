@@ -44,7 +44,7 @@ int handleInput(const int keyPress, struct workspacePos_t *wsPos){
                 wsPos->col = buffHandle->lastCharPos[wsPos->row];
             }
         }
-        else if(keyPress == KEY_UP && wsPos->row > 0){
+        else if(keyPress == KEY_UP && wsPos->row > 0){  
             wsPos->row--;
             if(checkIfNullTextBuffer(wsPos->row,wsPos->col)){
                 wsPos->col = buffHandle->lastCharPos[wsPos->row];
@@ -89,6 +89,10 @@ int handleInput(const int keyPress, struct workspacePos_t *wsPos){
         moveTextBuffer(wsPos->row,wsPos->col,wsPos->row,wsPos->col-1,0);
 
         if(wsPos->col > 0)wsPos->col--;
+        else if(wsPos->col == 0 && wsPos->row > 0){
+            wsPos->row--;
+            wsPos->col =  buffHandle->lastCharPos[wsPos->row];
+        }
 
         break;
     case Menu:
