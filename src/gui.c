@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <string.h>
+#include <stdio.h>
 #include <math.h>
 #include "textBuffer.h"
 #include "misc.h"
@@ -9,7 +10,7 @@
 #define PROGRAM_NAME_LEN 14
 
 #define HEADER_SIZE_ROW 1
-#define TOOLTIP_SIZE_ROW 3
+#define TOOLTIP_SIZE_ROW 1
 
 
 WINDOW  *headerWin,
@@ -45,15 +46,26 @@ void updateWorkspace(const struct textBuffer_t *textBuffer){
     wrefresh(workspaceWin);
 }
 
+void updateTooltip(const int row, const int col){
+    char posInfo[1024];
+    sprintf(posInfo,"(%d,%d)",row,col);
+
+    wclear(tooltipWin);
+    mvwprintw(tooltipWin,0,getmaxx(tooltipWin)-strlen(posInfo),"%s",posInfo);
+    wrefresh(tooltipWin);
+}
+
 //TODO: remove row and col and make it a struct
 
 void updateCursorPos(const int row,const int col){
-    move(row+HEADER_SIZE_ROW,col+3);
+    //this should be changed later
+    move(row+HEADER_SIZE_ROW+1,col+1+getNumOfDigits(getmaxy(workspaceWin)));
 }
 
 void updateGUI(const char *filename,const struct textBuffer_t *textBuffer,const int row,const int col){
     updateHeader(filename);
     updateWorkspace(textBuffer);
+    updateTooltip(row,col);
 
     updateCursorPos(row,col);
 
@@ -65,7 +77,8 @@ void initGUI(const char* filename, const struct textBuffer_t *textBuffer,const i
             colMax = getmaxx(stdscr);
 
     headerWin = newwin(HEADER_SIZE_ROW,colMax,0,0);
-    workspaceWin = newwin(rowMax-HEADER_SIZE_ROW,colMax,HEADER_SIZE_ROW,0);
+    workspaceWin = newwin(rowMax-HEADER_SIZE_ROW-TOOLTIP_SIZE_ROW-1,colMax,HEADER_SIZE_ROW+1,0);
+    tooltipWin = newwin(TOOLTIP_SIZE_ROW,colMax,rowMax-TOOLTIP_SIZE_ROW,0);
 
     refresh();
     updateGUI(filename,textBuffer,row,col);

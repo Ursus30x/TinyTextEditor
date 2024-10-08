@@ -10,12 +10,13 @@
 #define MAX_ROW 20
 #define MAX_COL 100
 
-enum modeTypes{Insert,Move,newLine,Delete,Menu,Error};
+enum modeTypes{Insert,Move,newLine,Tab,Delete,Menu,Error};
 
 enum modeTypes checkMode(const int keyPress){
     if(32 <= keyPress && keyPress <= 126)                       return Insert;
     else if(KEY_DOWN <= keyPress && keyPress <= KEY_RIGHT)      return Move;
     else if(keyPress == '\n')                                   return newLine;
+    else if(keyPress == 9)                                      return Tab;
     else if(keyPress == KEY_DC || keyPress == KEY_BACKSPACE)    return Delete;
     else if(true)                                               return Menu;
     else                                                        return Error;
@@ -31,11 +32,10 @@ int handleInput(const int keyPress, struct workspacePos_t *wsPos){
         moveTextBuffer(wsPos->row,wsPos->col,wsPos->row,wsPos->col+1,1);
         writeCharToTextBuffer((char)(keyPress),wsPos->row,wsPos->col);
         
-        //buffHandle->lastCharPos[wsPos->row] = wsPos->col; 
+        buffHandle->lastCharPos[wsPos->row]++;
         wsPos->col++;
         break;
     case Move:
-        //TODO: add a chceker if there is a \n character
 
         if(keyPress == KEY_DOWN && wsPos->row < MAX_ROW 
         && !checkIfNullTextBuffer(wsPos->row+1,0)){
@@ -53,9 +53,16 @@ int handleInput(const int keyPress, struct workspacePos_t *wsPos){
         else if(keyPress == KEY_LEFT && wsPos->col > 0){
             wsPos->col--;
         }
-        else if(keyPress == KEY_RIGHT && wsPos->col < MAX_COL 
-        && !checkIfNullTextBuffer(wsPos->row,wsPos->col)){
+        else if(keyPress == KEY_LEFT && wsPos->col == 0 && wsPos->row > 0){
+            wsPos->row--;
+            wsPos->col = buffHandle->lastCharPos[wsPos->row];
+        }
+        else if(keyPress == KEY_RIGHT && !checkIfNullTextBuffer(wsPos->row,wsPos->col+1)){
             wsPos->col++;
+        }
+        else if(keyPress == KEY_RIGHT && !checkIfNullTextBuffer(wsPos->row+1,0) ){
+            wsPos->col = 0;
+            wsPos->row++;
         }
 
         break;
@@ -67,6 +74,16 @@ int handleInput(const int keyPress, struct workspacePos_t *wsPos){
         wsPos->col = 0;
         
         //if(!checkIfNullTextBuffer(wsPos->row+1,0))writeCharToTextBuffer('\n',wsPos->row,wsPos->col);
+        break;
+
+    case Tab:
+        //rn tab space amount is equal 3
+        const int spaceAmount = 3;
+
+        moveTextBuffer(wsPos->row,wsPos->col,wsPos->row,wsPos->col+spaceAmount,1);
+        for(int i = 0;i<spaceAmount;i++)writeCharToTextBuffer(' ',wsPos->row,wsPos->col+i);
+        wsPos->col+=spaceAmount;
+            
         break;
     case Delete:
         moveTextBuffer(wsPos->row,wsPos->col,wsPos->row,wsPos->col-1,0);

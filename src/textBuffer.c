@@ -30,6 +30,11 @@ bool checkIfNullTextBuffer(const int row, const int col){
     else return false;
 }
 
+bool checkIfEndlTextBuffer(const int row, const int col){
+    if(textBuffer.buffer[row][col] == '\n')return true;
+    else return false;
+}
+
 #define LEFT    0
 #define RIGHT   1
 
