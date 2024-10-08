@@ -18,6 +18,12 @@ void writeCharToTextBuffer(const char c,const int row,const int col);
 
 bool checkIfNullTextBuffer(const int row, const int col);
 
+//LEFT = 0
+//RIGHT = 1
+void moveTextBuffer(const int startRow,const int startCol,const int endRow,const int endCol,const int side);
+
+void insertNewLineTextBuffer(const int row,const int col);
+
 int freeTextBuffer();
 
 struct textBuffer_t* getTextBufferHandle();
